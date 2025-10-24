@@ -1,5 +1,9 @@
 import path from "path";
 import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -7,7 +11,6 @@ import uploadRoutes from "./routes/upload";
 import summaryRoutes from "./routes/summary";
 import downloadRoutes from "./routes/download";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const app = express();
 
@@ -19,8 +22,6 @@ app.use(
         allowedHeaders: ["Content-Type", "Authorization"],
     })
 );
-
-app.options("/*", cors());
 
 // Body parsers
 app.use(express.json({ limit: "200mb" }));
@@ -48,13 +49,13 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/summary", summaryRoutes);
 app.use("/api/download", downloadRoutes);
 
-// Base route
+// Base route for health check
 app.get("/", (req, res) => {
     res.send("AI Meeting Summarizer API is running 🚀");
 });
 
-// Catch-all route for unknown paths (important for SPA or Render)
-app.get("*", (req, res) => {
+// Catch-all for unknown routes (all HTTP methods)
+app.use((req, res) => {
     res.status(404).json({ message: "Route not found" });
 });
 
