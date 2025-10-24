@@ -21,7 +21,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ transcript, summary, me
         try {
             setLoading(true);
             setError('');
-            const response = await api.get(`/download/${meetingId}`, { responseType: 'blob' });
+            const response = await api.get(`/api/download/${meetingId}`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;

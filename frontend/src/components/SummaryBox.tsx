@@ -20,7 +20,7 @@ const SummaryBox: React.FC<SummaryBoxProps> = ({ transcript, setSummary }) => {
         try {
             setLoading(true);
             setError('');
-            const response = await api.post('/summary', { text: transcript });
+            const response = await api.post('/api/summary', { text: transcript });
             setSummary(response.data.summary);
             setLocalSummary(response.data.summary);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

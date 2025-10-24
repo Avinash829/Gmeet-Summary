@@ -25,7 +25,7 @@ const UploadBox: React.FC<UploadBoxProps> = ({ setTranscript, setMeetingId }) =>
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await api.post('/upload', formData, {
+            const response = await api.post('/api/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
                 onUploadProgress: (event) => {
                     const percent = Math.round((event.loaded * 100) / (event.total || 1));
