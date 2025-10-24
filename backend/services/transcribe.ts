@@ -5,7 +5,7 @@ const client = new AssemblyAI({
     apiKey: process.env.ASSEMBLYAI_API_KEY || "",
 });
 
-console.log("ASSEMBLYAI_API_KEY:", process.env.ASSEMBLYAI_API_KEY);
+// console.log("ASSEMBLYAI_API_KEY:", process.env.ASSEMBLYAI_API_KEY);
 
 
 
