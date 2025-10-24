@@ -4,6 +4,8 @@
   "description": "AI Meeting Summarizer Backend (Node.js + Express + TypeScript)",
   "main": "dist/index.js",
   "scripts": {
+        "build": "tsc",
+
     "start": "node index.ts",
     "dev": "nodemon index.ts"
   },
