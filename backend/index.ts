@@ -36,23 +36,19 @@ app.use("/api", summaryRoutes);
 app.use("/api", downloadRoutes);
 
 
-// Root route
 app.get("/", (req, res) => {
     res.send("AI Meeting Summarizer API is running 🚀");
 });
 
-// Health check (for Render/Railway)
 app.get("/api/health", (req, res) => {
     res.json({ status: "ok", uptime: process.uptime() });
 });
 
-// Error handler middleware (last)
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error("Unhandled Error:", err);
     res.status(500).json({ error: err.message || "Internal Server Error" });
 });
 
-// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

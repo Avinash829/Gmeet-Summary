@@ -1,7 +1,6 @@
 import fs from "fs";
 import { AssemblyAI, TranscribeParams } from "assemblyai";
 
-// Initialize AssemblyAI client
 const client = new AssemblyAI({
     apiKey: process.env.ASSEMBLYAI_API_KEY || "",
 });
@@ -9,11 +8,7 @@ const client = new AssemblyAI({
 console.log("ASSEMBLYAI_API_KEY:", process.env.ASSEMBLYAI_API_KEY);
 
 
-/**
- * Transcribe an audio file using AssemblyAI
- * @param filePath Path to audio file
- * @returns Transcribed text
- */
+
 export async function transcribeWithAssemblyAI(filePath: string): Promise<string> {
     if (!fs.existsSync(filePath)) {
         throw new Error(`File not found: ${filePath}`);
@@ -25,10 +20,8 @@ export async function transcribeWithAssemblyAI(filePath: string): Promise<string
             speech_model: "universal",
         };
 
-        // Send transcription request
         const transcript = await client.transcripts.transcribe(params);
 
-        // Poll until transcription completes
         let completedTranscript = transcript;
         while (completedTranscript.status === "queued" || completedTranscript.status === "processing") {
             await new Promise((r) => setTimeout(r, 3000)); // 3s delay

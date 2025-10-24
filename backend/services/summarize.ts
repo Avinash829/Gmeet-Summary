@@ -51,7 +51,6 @@ Transcript:
         timeout: 120000
     });
 
-    // Log the full response to see its structure
     console.log("Gemini API response:", JSON.stringify(resp.data, null, 2));
 
     const summary = (resp.data as any)?.candidates?.[0]?.content?.parts?.[0]?.text;

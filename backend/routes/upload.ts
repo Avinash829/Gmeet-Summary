@@ -10,11 +10,9 @@ import Meeting from "../models/Meeting";
 
 const router = express.Router();
 
-// Upload dir
 const UPLOAD_DIR = "uploads";
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
-// Multer storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, UPLOAD_DIR),
     filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
@@ -30,7 +28,6 @@ router.post("/upload", upload.single("file"), async (req, res) => {
         const isVideo = [".mp4", ".mov", ".avi", ".mkv"].includes(ext);
         const audioPath = isVideo ? `${filePath}.wav` : filePath;
 
-        // Convert video → audio
         if (isVideo) {
             try { await convertToWav(filePath, audioPath); } 
             catch (err) {
@@ -39,15 +36,12 @@ router.post("/upload", upload.single("file"), async (req, res) => {
             }
         }
 
-        // Transcribe audio
         const transcript = await transcribeWithAssemblyAI(audioPath);
 
-        // Generate AI summary
         let summary = "";
         try { summary = await summarizeTranscript(transcript); } 
         catch (err) { summary = "AI summarization failed"; }
 
-        // Save to DB
         const meeting = new Meeting({
             originalFileName: req.file.originalname,
             filePath,
@@ -56,11 +50,9 @@ router.post("/upload", upload.single("file"), async (req, res) => {
         });
         await meeting.save();
 
-        // Cleanup
         if (isVideo) unlinkIfExists(audioPath);
         unlinkIfExists(filePath);
 
-        // Send both transcript + summary
         return res.json({ transcript, summary, meetingId: meeting._id });
 
     } catch (err: any) {

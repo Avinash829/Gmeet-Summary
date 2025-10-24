@@ -1,6 +1,5 @@
 import fs from "fs";
 
-/** Delete a temporary file safely if it exists. */
 export function unlinkIfExists(filePath: string) {
     try {
         if (fs.existsSync(filePath)) {

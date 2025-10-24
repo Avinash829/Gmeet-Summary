@@ -4,10 +4,7 @@ import { summarizeTranscript } from "../services/summarize";
 
 const router = express.Router();
 
-/**
- * POST /summary
- * Regenerates a summary for a meeting given its MongoDB ID.
- */
+
 router.post("/summary", async (req, res) => {
     try {
         const { id } = req.body;
