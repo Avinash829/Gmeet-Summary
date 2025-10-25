@@ -3,7 +3,9 @@ import axios from "axios";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 export async function summarizeTranscript(transcript: string): Promise<string> {
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY not set");
+    if (!GEMINI_API_KEY) {
+        throw new Error("GEMINI_API_KEY not set in environment variables.");
+    }
 
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
@@ -12,7 +14,7 @@ export async function summarizeTranscript(transcript: string): Promise<string> {
             {
                 parts: [
                     {
-                        text: `You are an expert AI meeting assistant. 
+                        text: `You are an expert AI meeting assistant.
 Your task is to read the entire transcript of a meeting and produce a detailed, structured, and easy-to-read summary.
 
 Please include the following sections:
@@ -36,25 +38,47 @@ Please include the following sections:
    - Include additional context or implications to help someone understand the outcome and next steps.
 
 Transcript:
-\n${transcript}`
+${transcript}`
                     }
                 ]
             }
         ]
     };
 
-    const resp = await axios.post(url, data, {
-        headers: {
-            "Content-Type": "application/json",
-            "X-goog-api-key": GEMINI_API_KEY
-        },
-        timeout: 120000
-    });
+    // Define Gemini API response type
+    interface GeminiCandidate {
+        content?: {
+            parts?: { text?: string }[];
+        };
+    }
+    interface GeminiApiResponse {
+        candidates?: GeminiCandidate[];
+    }
 
-    console.log("Gemini API response:", JSON.stringify(resp.data, null, 2));
+    try {
+        const resp = await axios.post<GeminiApiResponse>(url, data, {
+            headers: {
+                "Content-Type": "application/json",
+                "X-goog-api-key": GEMINI_API_KEY
+            },
+            timeout: 120000
+        });
 
-    const summary = (resp.data as any)?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!summary) throw new Error("No summary returned from Gemini API");
+        if (!resp.data?.candidates?.length) {
+            console.error("Gemini API returned no candidates:", resp.data);
+            throw new Error("No summary returned from Gemini API");
+        }
 
-    return summary;
+        const summary = resp.data.candidates[0]?.content?.parts?.[0]?.text;
+        if (!summary) {
+            console.error("Gemini API returned empty summary:", resp.data);
+            throw new Error("No summary returned from Gemini API");
+        }
+
+        return summary;
+
+    } catch (err: any) {
+        console.error("Error calling Gemini API:", err.response?.data || err.message);
+        throw new Error("Failed to generate summary from Gemini API");
+    }
 }

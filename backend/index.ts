@@ -14,14 +14,16 @@ import downloadRoutes from "./routes/download";
 
 const app = express();
 
-// CORS setup
-app.use(
-    cors({
-        origin: process.env.FRONTEND_URL || "http://localhost:3000",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://gmeet-summary.vercel.app"
+];
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
+
 
 // Body parsers
 app.use(express.json({ limit: "200mb" }));
@@ -46,8 +48,8 @@ mongoose
 
 // API routes
 app.use("/api/upload", uploadRoutes);
-app.use("/api/summary", summaryRoutes);
-app.use("/api/download", downloadRoutes);
+app.use("/api", summaryRoutes);
+app.use("/api", downloadRoutes);
 
 // Base route for health check
 app.get("/", (req, res) => {
